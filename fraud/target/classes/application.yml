@@ -1,0 +1,25 @@
+server:
+  port: 10121
+spring:
+  application:
+    name: fraud
+  jpa:
+    show-sql: true
+    properties:
+      hibarnate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    username: root
+    password: root
+    url: jdbc:postgresql://localhost:5432/fraud
+    driver-class-name: org.postgresql.Driver
+
+eureka:
+ client:
+   service-url:
+     defaultZone: http://localhost:8781/eureka
+   fetch-registry: true
+   register-with-eureka: true
+
+
