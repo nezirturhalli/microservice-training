@@ -1,6 +1,8 @@
 package org.example.customer;
 
 import lombok.AllArgsConstructor;
+import org.example.clients.fraud.FraudCheckResponse;
+import org.example.clients.fraud.FraudClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -9,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RestTemplate restTemplate;
+    private final FraudClient fraudClient;
 
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder().
@@ -18,11 +21,9 @@ public class CustomerService {
                 .build();
         // todo: check email valid, email not token
         customerRepository.saveAndFlush(customer);
-        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
-                "http://localhost:10121/api/v1/fraud-check/{customerId}",
-                FraudCheckResponse.class,
-                customer.getCustomerId()
-        );
+
+        FraudCheckResponse fraudCheckResponse =
+                fraudClient.isFraudster(customer.getCustomerId());
 
         assert fraudCheckResponse != null;
         if (fraudCheckResponse.isFraudster()) {
